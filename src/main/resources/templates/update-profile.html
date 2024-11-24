@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background-color: #fff;
+            color: #333;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+        }
+        .card-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #6a11cb;
+        }
+        .form-control {
+            border-radius: 10px;
+        }
+        .btn {
+            background-color: #6a11cb;
+            border: none;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2575fc;
+        }
+        .form-group label {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-header">Update Profile</div>
+    <form id="updateProfileForm">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password (Leave blank if unchanged)</label>
+            <input type="password" class="form-control" id="password">
+        </div>
+        <button type="submit" class="btn btn-block text-white">Update</button>
+    </form>
+</div>
+<script>
+    document.getElementById('updateProfileForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch('/api/auth/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ username, email, password })
+            });
+            const message = await response.text();
+            alert(message);
+            window.location.href = '/';
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to update profile. Please try again.');
+        }
+    });
+</script>
+</body>
+</html>
