@@ -33,6 +33,10 @@ public class AuthService {
         userRepository.save(user);
         return "User registered successfully!";
     }
+    public User getProfile(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
     public String login(String username, String password) {
         Optional<User> userOptional = userRepository.findByUsername(username);
 

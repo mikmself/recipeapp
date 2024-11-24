@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.recipeapp.security.JwtUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -41,6 +44,21 @@ public class AuthController {
             Long userId = jwtUtil.extractUserId(jwtToken);
             String message = authService.updateProfile(userId, user);
             return ResponseEntity.ok().body(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String token) {
+        try {
+            String jwtToken = token.substring(7); // Menghapus prefix "Bearer "
+            Long userId = jwtUtil.extractUserId(jwtToken);
+            User user = authService.getProfile(userId);
+            Map<String, String> profileData = new HashMap<>();
+            profileData.put("username", user.getUsername());
+            profileData.put("email", user.getEmail());
+
+            return ResponseEntity.ok(profileData);
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }

@@ -67,6 +67,36 @@
     </form>
 </div>
 <script>
+    document.addEventListener("DOMContentLoaded", async function() {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('Token not found. Please log in.');
+            window.location.href = '/login';
+            return;
+        }
+
+        try {
+            // Fetch current user profile
+            const response = await fetch('/api/auth/profile', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch profile');
+            }
+
+            const user = await response.json();
+            document.getElementById('username').value = user.username; // Set current username
+            document.getElementById('email').value = user.email; // Set current email
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to load profile. Please try again.');
+        }
+    });
+
     document.getElementById('updateProfileForm').addEventListener('submit', async function(event) {
         event.preventDefault();
         const username = document.getElementById('username').value;
