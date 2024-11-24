@@ -100,8 +100,14 @@
 <body>
 <div class="container">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="text-center">Cook Helper</h2>
-    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+    <div>
+      <h2 class="text-center">Cook Helper</h2>
+      <b><p id="welcomeMessage" class="text-left"></p></b>
+    </div>
+    <div>
+      <button class="btn btn-secondary mr-2" onclick="logout()">Logout</button>
+      <a href="/update-profile" class="btn btn-primary">Update Profile</a> <!-- Link ke update profile -->
+    </div>
   </div>
   <div class="dropdown">
     <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search for a recipe..."
@@ -172,13 +178,13 @@
       alert('Gagal mengambil detail resep. Silakan coba lagi.');
     }
   }
-  document.addEventListener("DOMContentLoaded", () => {
-    // Cek apakah token ada di localStorage
+  document.addEventListener("DOMContentLoaded", async  () => {
     const token = localStorage.getItem('token');
     if (!token) {
       window.location.href = '/login';
     }
     loadSearchHistory();
+
     document.addEventListener("click", (event) => {
       const searchInput = document.getElementById('searchInput');
       const historyDropdown = document.getElementById('historyDropdown');
@@ -186,6 +192,25 @@
         historyDropdown.style.display = 'none';
       }
     });
+
+    try {
+      const response = await fetch('/api/auth/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile');
+      }
+
+      const user = await response.json();
+      const welcomeMessage = document.getElementById('welcomeMessage');
+      welcomeMessage.textContent = `Welcome, ${user.username}!`;
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to load profile. Please try again.');
+    }
   });
   function toggleDropdown() {
     const historyDropdown = document.getElementById('historyDropdown');
